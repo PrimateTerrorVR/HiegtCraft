@@ -16,12 +16,22 @@ body {
   width: 80%;
 }
 
-.inventory, .workspace {
+.inventory {
   border: 2px solid #ccc;
   padding: 20px;
-  border-radius: 8px;
-  width: 45%;
+  width: 20%;
   background-color: #fff;
+  overflow-y: scroll;
+  height: 80vh;
+}
+
+.workspace {
+  border: 2px solid #ccc;
+  padding: 20px;
+  width: 75%;
+  background-color: #fff;
+  height: 80vh;
+  position: relative;
 }
 
 #elements div, #workspace-board div {
@@ -32,6 +42,7 @@ body {
   margin: 5px;
   background-color: #e0e0e0;
   border-radius: 4px;
+  font-size: 0.9em;
 }
 
 .message {
@@ -40,4 +51,18 @@ body {
   background-color: #f9f9f9;
   text-align: center;
   font-weight: bold;
+}
+
+.particle {
+  position: absolute;
+  background-color: #ffcd4c;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  animation: particleAnimation 1s ease-out;
+}
+
+@keyframes particleAnimation {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.1); opacity: 0; }
 }
