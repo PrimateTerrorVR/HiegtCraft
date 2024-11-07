@@ -1,31 +1,30 @@
-// Base elements with emojis
+// Define base elements with emojis
 const baseElements = [
-  { name: 'Water 💧', emoji: '💧' },
-  { name: 'Fire 🔥', emoji: '🔥' },
-  { name: 'Earth 🌍', emoji: '🌍' },
-  { name: 'Air 🌬️', emoji: '🌬️' },
-  { name: 'Metal ⚙️', emoji: '⚙️' },
-  { name: 'Tree 🌳', emoji: '🌳' },
-  { name: 'Sun ☀️', emoji: '☀️' },
-  { name: 'Moon 🌙', emoji: '🌙' },
-  // Add more elements up to 100 elements
+  'Water 💧', 'Fire 🔥', 'Earth 🌍', 'Air 🌬️',
+  'Metal ⚙️', 'Wood 🌳', 'Sun ☀️', 'Moon 🌙',
+  'Energy ⚡', 'Dust 💨', 'Plant 🌱', 'Rock 🪨',
+  // Add more base elements if needed
 ];
 
-// Sample combinations (expand this as needed)
+// Combinations to create new elements
 const combinations = {
   'Water 💧+Fire 🔥': 'Steam 🌫️',
   'Water 💧+Earth 🌍': 'Mud 🧱',
   'Fire 🔥+Earth 🌍': 'Lava 🌋',
   'Air 🌬️+Water 💧': 'Rain 🌧️',
-  'Sun ☀️+Tree 🌳': 'Fruit 🍎',
-  // Add more combinations for more complex gameplay
+  'Sun ☀️+Plant 🌱': 'Growth 🌿',
+  'Dust 💨+Energy ⚡': 'Spark 💥',
+  'Earth 🌍+Metal ⚙️': 'Ore 🪙',
+  'Water 💧+Air 🌬️': 'Cloud ☁️',
+  'Rock 🪨+Energy ⚡': 'Magnet 🧲',
+  // Add as many combinations as you like
 };
 
-// Load or initialize game state
-let inventory = JSON.parse(localStorage.getItem('alchemyInventory')) || baseElements.map(e => e.name);
+// Initialize inventory and discovered elements
+let inventory = JSON.parse(localStorage.getItem('alchemyInventory')) || [...baseElements];
 let discoveredElements = new Set(inventory);
 
-// Function to render the inventory
+// Render inventory
 function renderInventory() {
   const elementsDiv = document.getElementById('elements');
   elementsDiv.innerHTML = '';
@@ -38,12 +37,12 @@ function renderInventory() {
   });
 }
 
-// Save progress to localStorage
+// Save to localStorage
 function saveProgress() {
   localStorage.setItem('alchemyInventory', JSON.stringify(inventory));
 }
 
-// Drag-and-drop functions
+// Drag-and-drop setup
 function drag(event, element) {
   event.dataTransfer.setData('element', element);
 }
@@ -53,7 +52,7 @@ function drop(event) {
   const element = event.dataTransfer.getData('element');
   const workspaceBoard = document.getElementById('workspace-board');
 
-  // If there's already an element in the workspace, try a combination
+  // If workspace already has an element, check for combinations
   if (workspaceBoard.children.length === 1) {
     const firstElement = workspaceBoard.children[0].textContent;
     const combinationKey = `${firstElement}+${element}` in combinations ? `${firstElement}+${element}` : `${element}+${firstElement}`;
@@ -68,16 +67,15 @@ function drop(event) {
     } else {
       showMessage("No combination found!");
     }
-    workspaceBoard.innerHTML = ''; // Clear the board after a combination attempt
-  } 
-  
-  // Add dragged element to the workspace if there's no combination
-  const elDiv = document.createElement('div');
-  elDiv.textContent = element;
-  elDiv.draggable = true;
-  elDiv.ondragstart = (e) => drag(e, element);
-  workspaceBoard.appendChild(elDiv);
-  
+    workspaceBoard.innerHTML = ''; // Clear workspace after combination attempt
+  } else {
+    // Allow more elements to be dragged to workspace if no combination occurs
+    const elDiv = document.createElement('div');
+    elDiv.textContent = element;
+    elDiv.draggable = true;
+    elDiv.ondragstart = (e) => drag(e, element);
+    workspaceBoard.appendChild(elDiv);
+  }
   renderInventory();
 }
 
@@ -85,13 +83,13 @@ function allowDrop(event) {
   event.preventDefault();
 }
 
-// Show a message in the message box
+// Show message
 function showMessage(msg) {
   const messageBox = document.getElementById('messageBox');
   messageBox.textContent = msg;
 }
 
-// Particles effect on successful combination
+// Particles effect for successful combination
 function showParticles() {
   const workspace = document.getElementById('workspace');
   for (let i = 0; i < 20; i++) {
@@ -100,11 +98,11 @@ function showParticles() {
     particle.style.left = `${Math.random() * 100}%`;
     particle.style.top = `${Math.random() * 100}%`;
     workspace.appendChild(particle);
-    setTimeout(() => particle.remove(), 1000); // Remove after animation
+    setTimeout(() => particle.remove(), 1000);
   }
 }
 
-// Initialize the game
+// Initialize game
 document.getElementById('workspace-board').ondrop = drop;
 document.getElementById('workspace-board').ondragover = allowDrop;
 renderInventory();
