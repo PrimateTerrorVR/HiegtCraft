@@ -1,26 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f0f0f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.container {
   display: flex;
   gap: 20px;
-  padding: 20px;
+  width: 80%;
 }
 
 .inventory, .workspace {
   border: 2px solid #ccc;
   padding: 20px;
+  border-radius: 8px;
   width: 45%;
+  background-color: #fff;
 }
 
-#elements div, #workspace div {
+#elements div, #workspace-board div {
   padding: 10px;
   border: 1px solid #333;
   cursor: grab;
   display: inline-block;
   margin: 5px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
 }
 
-#messageBox {
+.message {
   margin-top: 20px;
   padding: 10px;
-  background: #eee;
+  background-color: #f9f9f9;
+  text-align: center;
+  font-weight: bold;
 }
