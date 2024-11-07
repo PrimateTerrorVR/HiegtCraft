@@ -1,14 +1,29 @@
-// Elements and combinations
-const baseElements = ['Water', 'Fire', 'Earth', 'Air'];
+// Base elements with emojis
+const baseElements = [
+  { name: 'Water 💧', emoji: '💧' },
+  { name: 'Fire 🔥', emoji: '🔥' },
+  { name: 'Earth 🌍', emoji: '🌍' },
+  { name: 'Air 🌬️', emoji: '🌬️' },
+  // Add more elements up to 100
+  { name: 'Metal ⚙️', emoji: '⚙️' },
+  { name: 'Tree 🌳', emoji: '🌳' },
+  { name: 'Sun ☀️', emoji: '☀️' },
+  { name: 'Moon 🌙', emoji: '🌙' },
+  // And so on up to 100 elements
+];
+
+// Sample combinations (expand this as needed)
 const combinations = {
-  'Water+Fire': 'Steam',
-  'Water+Earth': 'Mud',
-  'Fire+Earth': 'Lava',
-  'Air+Water': 'Rain',
+  'Water 💧+Fire 🔥': 'Steam 🌫️',
+  'Water 💧+Earth 🌍': 'Mud 🧱',
+  'Fire 🔥+Earth 🌍': 'Lava 🌋',
+  'Air 🌬️+Water 💧': 'Rain 🌧️',
+  'Sun ☀️+Tree 🌳': 'Fruit 🍎',
+  // Add more combinations for more complex gameplay
 };
 
 // Load or initialize game state
-let inventory = JSON.parse(localStorage.getItem('alchemyInventory')) || [...baseElements];
+let inventory = JSON.parse(localStorage.getItem('alchemyInventory')) || baseElements.map(e => e.name);
 let discoveredElements = new Set(inventory);
 
 // Function to render the inventory
@@ -48,7 +63,8 @@ function drop(event) {
       inventory.push(result);
       discoveredElements.add(result);
       showMessage(`You created: ${result}!`);
-      saveProgress();  // Save new progress
+      showParticles();
+      saveProgress();
     } else {
       showMessage("No combination found!");
     }
@@ -69,6 +85,19 @@ function allowDrop(event) {
 function showMessage(msg) {
   const messageBox = document.getElementById('messageBox');
   messageBox.textContent = msg;
+}
+
+// Particles effect on successful combination
+function showParticles() {
+  const workspace = document.getElementById('workspace');
+  for (let i = 0; i < 20; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = `${Math.random() * 100}%`;
+    particle.style.top = `${Math.random() * 100}%`;
+    workspace.appendChild(particle);
+    setTimeout(() => particle.remove(), 1000); // Remove after animation
+  }
 }
 
 // Initialize the game
