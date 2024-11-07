@@ -1,0 +1,26 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.inventory, .workspace {
+  border: 2px solid #ccc;
+  padding: 20px;
+  width: 45%;
+}
+
+#elements div, #workspace div {
+  padding: 10px;
+  border: 1px solid #333;
+  cursor: grab;
+  display: inline-block;
+  margin: 5px;
+}
+
+#messageBox {
+  margin-top: 20px;
+  padding: 10px;
+  background: #eee;
+}
