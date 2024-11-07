@@ -1,18 +1,17 @@
-// Initial elements and combination rules
+// Elements and combinations
 const baseElements = ['Water', 'Fire', 'Earth', 'Air'];
 const combinations = {
   'Water+Fire': 'Steam',
   'Water+Earth': 'Mud',
   'Fire+Earth': 'Lava',
   'Air+Water': 'Rain',
-  // Add more combinations as you go
 };
 
-// Initialize game state
-let inventory = [...baseElements];
-let discoveredElements = new Set(baseElements);
+// Load or initialize game state
+let inventory = JSON.parse(localStorage.getItem('alchemyInventory')) || [...baseElements];
+let discoveredElements = new Set(inventory);
 
-// Function to render inventory
+// Function to render the inventory
 function renderInventory() {
   const elementsDiv = document.getElementById('elements');
   elementsDiv.innerHTML = '';
@@ -25,7 +24,12 @@ function renderInventory() {
   });
 }
 
-// Drag and drop functions
+// Save progress to localStorage
+function saveProgress() {
+  localStorage.setItem('alchemyInventory', JSON.stringify(inventory));
+}
+
+// Drag-and-drop functions
 function drag(event, element) {
   event.dataTransfer.setData('element', element);
 }
@@ -33,10 +37,10 @@ function drag(event, element) {
 function drop(event) {
   event.preventDefault();
   const element = event.dataTransfer.getData('element');
-  const workspaceDiv = document.getElementById('workspace');
+  const workspaceBoard = document.getElementById('workspace-board');
 
-  if (workspaceDiv.children.length === 1) {
-    const firstElement = workspaceDiv.children[0].textContent;
+  if (workspaceBoard.children.length === 1) {
+    const firstElement = workspaceBoard.children[0].textContent;
     const combinationKey = `${firstElement}+${element}` in combinations ? `${firstElement}+${element}` : `${element}+${firstElement}`;
     
     if (combinations[combinationKey] && !discoveredElements.has(combinations[combinationKey])) {
@@ -44,14 +48,15 @@ function drop(event) {
       inventory.push(result);
       discoveredElements.add(result);
       showMessage(`You created: ${result}!`);
+      saveProgress();  // Save new progress
     } else {
       showMessage("No combination found!");
     }
-    workspaceDiv.innerHTML = '';
+    workspaceBoard.innerHTML = '';
   } else {
     const elDiv = document.createElement('div');
     elDiv.textContent = element;
-    workspaceDiv.appendChild(elDiv);
+    workspaceBoard.appendChild(elDiv);
   }
   renderInventory();
 }
@@ -60,13 +65,13 @@ function allowDrop(event) {
   event.preventDefault();
 }
 
-// Show message function
+// Show a message in the message box
 function showMessage(msg) {
   const messageBox = document.getElementById('messageBox');
   messageBox.textContent = msg;
 }
 
-// Initial render
-document.getElementById('workspace').ondrop = drop;
-document.getElementById('workspace').ondragover = allowDrop;
+// Initialize the game
+document.getElementById('workspace-board').ondrop = drop;
+document.getElementById('workspace-board').ondragover = allowDrop;
 renderInventory();
