@@ -4,12 +4,11 @@ const baseElements = [
   { name: 'Fire 🔥', emoji: '🔥' },
   { name: 'Earth 🌍', emoji: '🌍' },
   { name: 'Air 🌬️', emoji: '🌬️' },
-  // Add more elements up to 100
   { name: 'Metal ⚙️', emoji: '⚙️' },
   { name: 'Tree 🌳', emoji: '🌳' },
   { name: 'Sun ☀️', emoji: '☀️' },
   { name: 'Moon 🌙', emoji: '🌙' },
-  // And so on up to 100 elements
+  // Add more elements up to 100 elements
 ];
 
 // Sample combinations (expand this as needed)
@@ -54,6 +53,7 @@ function drop(event) {
   const element = event.dataTransfer.getData('element');
   const workspaceBoard = document.getElementById('workspace-board');
 
+  // If there's already an element in the workspace, try a combination
   if (workspaceBoard.children.length === 1) {
     const firstElement = workspaceBoard.children[0].textContent;
     const combinationKey = `${firstElement}+${element}` in combinations ? `${firstElement}+${element}` : `${element}+${firstElement}`;
@@ -68,12 +68,16 @@ function drop(event) {
     } else {
       showMessage("No combination found!");
     }
-    workspaceBoard.innerHTML = '';
-  } else {
-    const elDiv = document.createElement('div');
-    elDiv.textContent = element;
-    workspaceBoard.appendChild(elDiv);
-  }
+    workspaceBoard.innerHTML = ''; // Clear the board after a combination attempt
+  } 
+  
+  // Add dragged element to the workspace if there's no combination
+  const elDiv = document.createElement('div');
+  elDiv.textContent = element;
+  elDiv.draggable = true;
+  elDiv.ondragstart = (e) => drag(e, element);
+  workspaceBoard.appendChild(elDiv);
+  
   renderInventory();
 }
 
