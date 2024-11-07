@@ -1,30 +1,39 @@
-// Define base elements with emojis
+// Basic elements with emojis to start with
 const baseElements = [
-  'Water 💧', 'Fire 🔥', 'Earth 🌍', 'Air 🌬️',
-  'Metal ⚙️', 'Wood 🌳', 'Sun ☀️', 'Moon 🌙',
-  'Energy ⚡', 'Dust 💨', 'Plant 🌱', 'Rock 🪨',
-  // Add more base elements if needed
+  'Water 💧', 'Fire 🔥', 'Earth 🌍', 'Air 🌬️'
 ];
 
-// Combinations to create new elements
+// Combination dictionary for creating new elements
 const combinations = {
   'Water 💧+Fire 🔥': 'Steam 🌫️',
   'Water 💧+Earth 🌍': 'Mud 🧱',
+  'Water 💧+Air 🌬️': 'Mist 🌁',
   'Fire 🔥+Earth 🌍': 'Lava 🌋',
-  'Air 🌬️+Water 💧': 'Rain 🌧️',
-  'Sun ☀️+Plant 🌱': 'Growth 🌿',
-  'Dust 💨+Energy ⚡': 'Spark 💥',
-  'Earth 🌍+Metal ⚙️': 'Ore 🪙',
-  'Water 💧+Air 🌬️': 'Cloud ☁️',
-  'Rock 🪨+Energy ⚡': 'Magnet 🧲',
-  // Add as many combinations as you like
+  'Fire 🔥+Air 🌬️': 'Energy ⚡',
+  'Earth 🌍+Air 🌬️': 'Dust 💨',
+  'Air 🌬️+Steam 🌫️': 'Cloud ☁️',
+  'Water 💧+Cloud ☁️': 'Rain 🌧️',
+  'Earth 🌍+Rain 🌧️': 'Plant 🌱',
+  'Plant 🌱+Sun ☀️': 'Tree 🌳',
+  'Fire 🔥+Tree 🌳': 'Ash 🖤',
+  'Tree 🌳+Earth 🌍': 'Forest 🌲',
+  'Rain 🌧️+Sun ☀️': 'Rainbow 🌈',
+  'Air 🌬️+Earth 🌍': 'Sand 🏖️',
+  'Sand 🏖️+Fire 🔥': 'Glass 🪟',
+  'Mud 🧱+Fire 🔥': 'Brick 🧱',
+  'Cloud ☁️+Air 🌬️': 'Sky 🌌',
+  'Sky 🌌+Sun ☀️': 'Day ☀️',
+  'Sky 🌌+Moon 🌙': 'Night 🌑',
+  'Tree 🌳+Metal ⚙️': 'Tool 🛠️',
+  'Water 💧+Metal ⚙️': 'Rust 🛠️',
+  // Keep adding more here if needed...
 };
 
-// Initialize inventory and discovered elements
-let inventory = JSON.parse(localStorage.getItem('alchemyInventory')) || [...baseElements];
+// Initialize or load game state from localStorage
+let inventory = JSON.parse(localStorage.getItem('alchemyInventory')) || baseElements;
 let discoveredElements = new Set(inventory);
 
-// Render inventory
+// Function to render elements in the inventory
 function renderInventory() {
   const elementsDiv = document.getElementById('elements');
   elementsDiv.innerHTML = '';
@@ -37,12 +46,12 @@ function renderInventory() {
   });
 }
 
-// Save to localStorage
+// Save progress to localStorage
 function saveProgress() {
   localStorage.setItem('alchemyInventory', JSON.stringify(inventory));
 }
 
-// Drag-and-drop setup
+// Drag-and-drop functions
 function drag(event, element) {
   event.dataTransfer.setData('element', element);
 }
@@ -52,44 +61,51 @@ function drop(event) {
   const element = event.dataTransfer.getData('element');
   const workspaceBoard = document.getElementById('workspace-board');
 
-  // If workspace already has an element, check for combinations
-  if (workspaceBoard.children.length === 1) {
+  // Append the dragged element to the workspace
+  const elDiv = document.createElement('div');
+  elDiv.textContent = element;
+  elDiv.draggable = true;
+  elDiv.ondragstart = (e) => drag(e, element);
+  workspaceBoard.appendChild(elDiv);
+
+  // Check for a combination if there's another element in the workspace
+  if (workspaceBoard.children.length >= 2) {
     const firstElement = workspaceBoard.children[0].textContent;
-    const combinationKey = `${firstElement}+${element}` in combinations ? `${firstElement}+${element}` : `${element}+${firstElement}`;
-    
-    if (combinations[combinationKey] && !discoveredElements.has(combinations[combinationKey])) {
-      const result = combinations[combinationKey];
+    const secondElement = element;
+    const combinationKey1 = `${firstElement}+${secondElement}`;
+    const combinationKey2 = `${secondElement}+${firstElement}`;
+    let result;
+
+    if (combinations[combinationKey1]) {
+      result = combinations[combinationKey1];
+    } else if (combinations[combinationKey2]) {
+      result = combinations[combinationKey2];
+    }
+
+    if (result && !discoveredElements.has(result)) {
       inventory.push(result);
       discoveredElements.add(result);
       showMessage(`You created: ${result}!`);
       showParticles();
       saveProgress();
-    } else {
+      renderInventory();
+    } else if (!result) {
       showMessage("No combination found!");
     }
-    workspaceBoard.innerHTML = ''; // Clear workspace after combination attempt
-  } else {
-    // Allow more elements to be dragged to workspace if no combination occurs
-    const elDiv = document.createElement('div');
-    elDiv.textContent = element;
-    elDiv.draggable = true;
-    elDiv.ondragstart = (e) => drag(e, element);
-    workspaceBoard.appendChild(elDiv);
   }
-  renderInventory();
 }
 
 function allowDrop(event) {
   event.preventDefault();
 }
 
-// Show message
+// Show message in message box
 function showMessage(msg) {
   const messageBox = document.getElementById('messageBox');
   messageBox.textContent = msg;
 }
 
-// Particles effect for successful combination
+// Particle effect for successful combination
 function showParticles() {
   const workspace = document.getElementById('workspace');
   for (let i = 0; i < 20; i++) {
@@ -98,11 +114,11 @@ function showParticles() {
     particle.style.left = `${Math.random() * 100}%`;
     particle.style.top = `${Math.random() * 100}%`;
     workspace.appendChild(particle);
-    setTimeout(() => particle.remove(), 1000);
+    setTimeout(() => particle.remove(), 1000); // Remove after animation
   }
 }
 
-// Initialize game
+// Initialize the game
 document.getElementById('workspace-board').ondrop = drop;
 document.getElementById('workspace-board').ondragover = allowDrop;
 renderInventory();
