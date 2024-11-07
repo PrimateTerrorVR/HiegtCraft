@@ -26,7 +26,7 @@ const combinations = {
   'Sky 🌌+Moon 🌙': 'Night 🌑',
   'Tree 🌳+Metal ⚙️': 'Tool 🛠️',
   'Water 💧+Metal ⚙️': 'Rust 🛠️',
-  // Keep adding more here if needed...
+  // Add more combinations if needed
 };
 
 // Initialize or load game state from localStorage
